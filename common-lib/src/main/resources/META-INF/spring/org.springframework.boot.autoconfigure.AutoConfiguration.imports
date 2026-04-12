@@ -1,0 +1,2 @@
+com.Distributed.common_lib.security.SharedSecurityAutoConfiguration
+com.Distributed.common_lib.error.SharedExceptionAutoConfiguration

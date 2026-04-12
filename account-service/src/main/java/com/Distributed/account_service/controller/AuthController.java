@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AuthController {
 
@@ -30,6 +30,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
+
 
 //    @GetMapping("/me")
 //    public ResponseEntity<UserProfileResponse> getProfile() {

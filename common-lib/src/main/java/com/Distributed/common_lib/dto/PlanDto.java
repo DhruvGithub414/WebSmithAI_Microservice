@@ -1,11 +1,11 @@
-package com.Distributed.account_service.dto.subscription;
+package com.Distributed.common_lib.dto;
 
-public record PlanResponse(
+public record PlanDto (
         Long id,
         String name,
         Integer maxProjects,
         Integer maxTokensPerDay,
         Boolean unlimitedAi,
         String price
-) {
+){
 }
