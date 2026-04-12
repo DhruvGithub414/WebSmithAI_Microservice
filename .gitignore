@@ -1,1 +1,6 @@
 .idea/
+
+# Environment secrets
+.env
+**/.env
+*.env.local

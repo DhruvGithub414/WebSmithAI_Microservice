@@ -1,7 +1,6 @@
 package com.Distributed.account_service.mapper;
 
 
-import com.Distributed.account_service.dto.subscription.PlanResponse;
 import com.Distributed.account_service.dto.subscription.SubscriptionResponse;
 import com.Distributed.account_service.entity.Plan;
 import com.Distributed.account_service.entity.Subscription;

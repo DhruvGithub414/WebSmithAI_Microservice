@@ -10,6 +10,7 @@ import com.Distributed.account_service.repository.UserRepository;
 import com.Distributed.account_service.service.AuthService;
 import com.Distributed.common_lib.error.BadRequestException;
 import com.Distributed.common_lib.security.AuthUtil;
+import com.Distributed.common_lib.security.JwtUserPrincipal;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +19,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -36,14 +39,18 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse signup(SignupRequest request) {
         userRepository.findByUsername(request.username()).ifPresent(
                 user->{
-                    throw new BadRequestException("User Already exists with username "+request.username());
+                    throw new BadRequestException("Use r Already exists with username "+request.username());
                 }
         );
         User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
         user = userRepository.save(user);
-        String token = authUtil.generateAccessToken(userMapper.toUserDto(user));
-        return new AuthResponse(token, userMapper.toUserProfileResponse(user));
+
+        JwtUserPrincipal jwtUserPrincipal = new JwtUserPrincipal(user.getId(), user.getName(),
+                user.getUsername(), null, new ArrayList<>());
+
+        String token = authUtil.generateAccessToken(jwtUserPrincipal);
+        return new AuthResponse(token, userMapper.toUserProfileResponse(jwtUserPrincipal));
     }
 
     @Override
@@ -52,8 +59,8 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(request.username(),request.password())
         );
 
-        User user = (User) authentication.getPrincipal();
-        String token = authUtil.generateAccessToken(userMapper.toUserDto(user));
+        JwtUserPrincipal user = (JwtUserPrincipal) authentication.getPrincipal();
+        String token = authUtil.generateAccessToken(user);
 
         return new AuthResponse(token, userMapper.toUserProfileResponse(user));
     }
