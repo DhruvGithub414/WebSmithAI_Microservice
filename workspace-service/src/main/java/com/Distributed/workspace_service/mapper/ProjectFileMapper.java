@@ -1,6 +1,6 @@
 package com.Distributed.workspace_service.mapper;
 
-import com.Distributed.workspace_service.dto.project.FileNode;
+import com.Distributed.common_lib.dto.FileNode;
 import com.Distributed.workspace_service.entity.ProjectFile;
 import org.mapstruct.Mapper;
 

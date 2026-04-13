@@ -1,13 +1,13 @@
 package com.Distributed.workspace_service.service;
 
 
+import com.Distributed.common_lib.dto.FileTreeDto;
 import com.Distributed.workspace_service.dto.project.FileContentResponse;
-import com.Distributed.workspace_service.dto.project.FileTreeResponse;
 
 public interface ProjectFileService {
-    FileTreeResponse getFileTree(Long projectId);
+    FileTreeDto getFileTree(Long projectId);
 
-    FileContentResponse getFileContent(Long projectId, String path);
+    String getFileContent(Long projectId, String path);
 
 //    FileContentResponse getFileContent(Long projectId, String path);
 
