@@ -56,7 +56,7 @@ public class AiGenerationServiceImpl implements AiGenerationService {
     @PreAuthorize(("@security.canEditProject(#projectId)"))
     public Flux<StreamResponse> streamResponse(String userMessage, Long projectId) {
 
-        usageService.checkDailyTokensUsage();
+//        usageService.checkDailyTokensUsage();
 
         long userId = authUtil.getCurrentUserId();
         ChatSession chatSession = createChatSessionIfNotExists(projectId, userId);

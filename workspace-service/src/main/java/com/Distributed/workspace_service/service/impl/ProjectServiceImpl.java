@@ -1,6 +1,7 @@
 package com.Distributed.workspace_service.service.impl;
 
 import com.Distributed.common_lib.dto.PlanDto;
+import com.Distributed.common_lib.enums.ProjectPermission;
 import com.Distributed.common_lib.enums.ProjectRole;
 import com.Distributed.common_lib.error.BadRequestException;
 import com.Distributed.common_lib.error.ResourceNotFoundException;
@@ -15,6 +16,7 @@ import com.Distributed.workspace_service.entity.ProjectMemberId;
 import com.Distributed.workspace_service.mapper.ProjectMapper;
 import com.Distributed.workspace_service.repository.ProjectMemberRepository;
 import com.Distributed.workspace_service.repository.ProjectRepository;
+import com.Distributed.workspace_service.security.SecurityExpressions;
 import com.Distributed.workspace_service.service.ProjectService;
 import com.Distributed.workspace_service.service.ProjectTemplateService;
 import jakarta.transaction.Transactional;
@@ -39,6 +41,7 @@ public class ProjectServiceImpl implements ProjectService {
     AuthUtil authUtil;
     ProjectTemplateService projectTemplateService;
     AccountClient accountClient;
+    SecurityExpressions securityExpressions;
 
     @Override
     public ProjectResponse createProject(ProjectRequest request) {
@@ -117,6 +120,11 @@ public class ProjectServiceImpl implements ProjectService {
 
         project.setDeletedAt(Instant.now());
         projectRepository.save(project);
+    }
+
+    @Override
+    public boolean hasPermission(Long projectId, ProjectPermission permission) {
+        return securityExpressions.hasPermission(projectId, permission);
     }
 
     public Project getAccessibleProjectById(Long projectId, Long userId){

@@ -1,8 +1,8 @@
-package com.Distributed.workspace_service.security;
+package com.Distributed.intelligence_service.security;
 
 import com.Distributed.common_lib.enums.ProjectPermission;
 import com.Distributed.common_lib.security.AuthUtil;
-import com.Distributed.workspace_service.repository.ProjectMemberRepository;
+import com.Distributed.intelligence_service.client.WorkspaceClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -12,20 +12,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SecurityExpressions {
 
-    private final ProjectMemberRepository projectMemberRepository;
     private final AuthUtil authUtil;
-
-    public boolean hasPermission(Long projectId, ProjectPermission projectPermission){
-        Long userId = authUtil.getCurrentUserId();
-        boolean granted = projectMemberRepository.findRoleByProjectIdAndUserId(projectId, userId)
-                .map(role -> role.getPermissions().contains(projectPermission))
-                .orElse(false);
-
-        if (!granted) {
-            log.warn("Permission denied for userId={}, projectId={}, permission={}", userId, projectId, projectPermission);
-        }
-
-        return granted;
+    private final WorkspaceClient workspaceClient;
+    private boolean hasPermission(Long projectId, ProjectPermission projectPermission){
+        return workspaceClient.checkPermission(projectId, projectPermission);
     }
 
     public boolean canViewProject(Long projectId){
