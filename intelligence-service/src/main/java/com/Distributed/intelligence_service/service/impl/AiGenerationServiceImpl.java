@@ -3,6 +3,7 @@ package com.Distributed.intelligence_service.service.impl;
 import com.Distributed.common_lib.enums.ChatEventType;
 import com.Distributed.common_lib.enums.MessageRole;
 import com.Distributed.common_lib.error.ResourceNotFoundException;
+import com.Distributed.common_lib.event.FileStoreRequestEvent;
 import com.Distributed.common_lib.security.AuthUtil;
 import com.Distributed.intelligence_service.client.WorkspaceClient;
 import com.Distributed.intelligence_service.dto.chat.StreamResponse;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.metadata.Usage;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -51,6 +53,8 @@ public class AiGenerationServiceImpl implements AiGenerationService {
 
     private final WorkspaceClient workspaceClient;
     private final UsageService usageService;
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     @PreAuthorize(("@security.canEditProject(#projectId)"))
@@ -152,6 +156,15 @@ public class AiGenerationServiceImpl implements AiGenerationService {
                 .forEach(e -> {
                     // projectFileService.saveFile(projectId, e.getFilePath(),e.getContent())\
                     // Add Kafka
+                    FileStoreRequestEvent fileStoreRequestEvent = new FileStoreRequestEvent(
+                           projectId,"",
+                           e.getFilePath(),
+                           e.getContent(),
+                            userId
+                    );
+                    log.info("Storage request event sent: {}", e.getFilePath());
+                    kafkaTemplate.send("file-storage-request-event","project-"+projectId,fileStoreRequestEvent);
+
                 });
 
         chatEventRepository.saveAll(chatEventList);
