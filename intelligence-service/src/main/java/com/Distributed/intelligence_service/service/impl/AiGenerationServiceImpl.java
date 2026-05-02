@@ -1,5 +1,6 @@
 package com.Distributed.intelligence_service.service.impl;
 
+import com.Distributed.common_lib.enums.ChatEventStatus;
 import com.Distributed.common_lib.enums.ChatEventType;
 import com.Distributed.common_lib.enums.MessageRole;
 import com.Distributed.common_lib.error.ResourceNotFoundException;
@@ -32,6 +33,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -147,6 +149,7 @@ public class AiGenerationServiceImpl implements AiGenerationService {
 
         chatEventList.addFirst(ChatEvent.builder()
                         .type(ChatEventType.THOUGHT)
+                        .status(ChatEventStatus.CONFIRMED)
                         .chatMessage(assistantChatMessage)
                         .content("Thought for "+duration+"s")
                         .sequenceOrder(0)
@@ -156,8 +159,11 @@ public class AiGenerationServiceImpl implements AiGenerationService {
                 .forEach(e -> {
                     // projectFileService.saveFile(projectId, e.getFilePath(),e.getContent())\
                     // Add Kafka
+                    String sagaId = UUID.randomUUID().toString();
+                    e.setSagaId(sagaId);
                     FileStoreRequestEvent fileStoreRequestEvent = new FileStoreRequestEvent(
-                           projectId,"",
+                           projectId,
+                            sagaId,
                            e.getFilePath(),
                            e.getContent(),
                             userId

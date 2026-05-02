@@ -1,5 +1,6 @@
 package com.Distributed.intelligence_service.llm;
 
+import com.Distributed.common_lib.enums.ChatEventStatus;
 import com.Distributed.common_lib.enums.ChatEventType;
 import com.Distributed.intelligence_service.entity.ChatEvent;
 import com.Distributed.intelligence_service.entity.ChatMessage;
@@ -50,6 +51,7 @@ public class LlmResponseParser {
             Map<String, String> attrMap = extractAttributes(attributes);
 
             ChatEvent.ChatEventBuilder builder = ChatEvent.builder()
+                    .status(ChatEventStatus.CONFIRMED)
                     .chatMessage(parentMessage)
                     .content(content) // This is your Markdown content
                     .sequenceOrder(orderCounter++);
@@ -58,7 +60,9 @@ public class LlmResponseParser {
                 case "message" -> builder.type(ChatEventType.MESSAGE);
                 case "file" -> {
                     builder.type(ChatEventType.FILE_EDIT);
-                    builder.filePath(attrMap.get("path")); // Required for files
+                    builder.filePath(attrMap.get("path"));
+                    builder.status(ChatEventStatus.PENDING);
+                    // Required for files
 //                    builder.content(null);
                 }
                 case "tool" -> {
